@@ -5,6 +5,11 @@ from logic.converters import ConversionStrategy
 
 
 class StrategyInterfaceTest(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.interface_name = 'Базовый класс для интерфейса стратегии конвертации'
+        return super().setUpClass()
+    
     def test_abstract_strategy_interface_exists(self):
         '''
         Тест: Существование базового интерфейса стратегии
@@ -14,6 +19,12 @@ class StrategyInterfaceTest(TestCase):
             self.assertTrue(ConversionStrategy)
         except (ModuleNotFoundError, ImportError):
             self.fail('Не существует базового интерфейса для стратегии конвертации')
+
+    def test_strategy_interface_has_docs(self):
+        self.assertIsNotNone(
+            ConversionStrategy.__doc__, 
+            f'Нет документации для {self.interface_name}'
+                             )
 
     def test_strategy_class_is_abstract(self):
         '''
