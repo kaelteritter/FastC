@@ -1,3 +1,8 @@
-class Command:
+from abc import ABC, abstractmethod
+
+
+class Command(ABC):
     '''Базовый класс команд'''
-    pass
+    @abstractmethod
+    def execute(self):
+        pass
