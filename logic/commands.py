@@ -6,3 +6,8 @@ class Command(ABC):
     @abstractmethod
     def execute(self):
         pass
+
+
+class ConvertImageCommand(Command):
+    def execute(self):
+        pass

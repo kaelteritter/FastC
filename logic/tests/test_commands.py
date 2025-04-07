@@ -1,8 +1,9 @@
 # logic/tests/test_commands
 from abc import ABC
 from unittest import TestCase
+import unittest
 
-from logic.commands import Command
+from logic.commands import Command, ConvertImageCommand
 
 
 class CommandInterfaceTest(TestCase):
@@ -55,3 +56,20 @@ class CommandInterfaceTest(TestCase):
             getattr(execute_method, '__isabstractmethod__', False),
              "Метод execute должен быть помечен как @abstractmethod"
              )
+        
+
+class ConreteCommandClassesTest(TestCase):
+    def setUp(self):
+        self.convert_image_cmd = ConvertImageCommand()
+        
+    def test_convert_image_command(self):
+        '''Тест: Реализация метода execute в конкретной команде'''
+        execute_method = getattr(self.convert_image_cmd, 'execute')
+        self.assertFalse(getattr(execute_method, '__isabstractmethod__', False))
+
+    
+        
+
+
+if __name__ == "__main__":
+    unittest.main()
