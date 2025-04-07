@@ -192,5 +192,19 @@ class ConversionObserverTest(TestCase):
 
 
 
+class NotifierObserverIntegrationTest(TestCase):
+    def setUp(self):
+        self.notifier = ConversionNotifier()
+        self.console_logger = ConsoleLogger()
+
+    def test_notifier_notify_attached_console_logger(self):
+        self.notifier.attach(self.console_logger)
+
+        with self.assertLogs() as captured:
+            self.notifier.notify('Test message')
+
+        self.assertIn("[Console Logger] Test message", captured.output[0], 
+                      'Наблюдатель не получил сообщения от уведомителя')
+
 if __name__ == "__main__":
     unittest.main()

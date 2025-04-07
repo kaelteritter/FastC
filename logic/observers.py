@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import logging
 
 
 class Subject(ABC):
@@ -43,5 +44,9 @@ class ConversionNotifier(Subject):
 
 
 class ConsoleLogger(Observer):
+    def __init__(self):
+        self.logger = logging.getLogger("ConsoleLogger")
+        self.logger.setLevel('INFO')
+
     def update(self, message):
-        print(f'[Console Logger] {message}')
+        self.logger.info(f'[Console Logger] {message}')
