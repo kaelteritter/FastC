@@ -56,6 +56,29 @@ class CommandInterfaceTest(TestCase):
             getattr(execute_method, '__isabstractmethod__', False),
              "Метод execute должен быть помечен как @abstractmethod"
              )
+
+    def test_abstract_command_class_has_undo_method(self):
+        '''
+        Тест: Проверка инициализации абстрактного метода undo
+        '''
+        self.assertTrue(
+            hasattr(Command, 'undo'),
+            'Метода undo не существует для Command'
+            )
+        self.assertTrue(
+            callable(getattr(Command, 'undo')),
+            f'Не инициализрован метод undo для {self.interface_name}'
+        )
+
+    def test_undo_method_is_abstract(self):
+        '''
+        Тест: Command имеет декоратор abstractmethod для метода undo
+        '''
+        undo_method = getattr(Command, 'undo')
+        self.assertTrue(
+            getattr(undo_method, '__isabstractmethod__', False),
+             "Метод undo должен быть помечен как @abstractmethod"
+             )
         
 
 class ConreteCommandClassesTest(TestCase):
@@ -66,6 +89,11 @@ class ConreteCommandClassesTest(TestCase):
         '''Тест: Реализация метода execute в конкретной команде'''
         execute_method = getattr(self.convert_image_cmd, 'execute')
         self.assertFalse(getattr(execute_method, '__isabstractmethod__', False))
+        
+    def test_undo_image_command(self):
+        '''Тест: Реализация метода undo в конкретной команде'''
+        undo_method = getattr(self.convert_image_cmd, 'undo')
+        self.assertFalse(getattr(undo_method, '__isabstractmethod__', False))
 
     
         
