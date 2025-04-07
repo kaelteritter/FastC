@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from .factory import FileConverterFactory
+
 from .observers import ConversionNotifier
 
 from .converters import ConversionStrategy
@@ -20,11 +22,11 @@ class Command(ABC):
 class ConvertImageCommand(Command):
     def __init__(
             self, 
-            strategy: ConversionStrategy,
+            converter_type: str,
             notifier: ConversionNotifier,
             _in_file
                  ):
-        self.strategy = strategy
+        self.strategy = FileConverterFactory().create_converter(converter_type)
         self.notifier = notifier
         self._in_file = _in_file
         self._out_file = None

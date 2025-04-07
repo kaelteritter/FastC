@@ -102,7 +102,7 @@ class ConreteCommandClassesTest(TestCase):
     def test_execute_command(self):
         '''Тест: Корректность работы execute-метода'''
         file = 'dog.webp'
-        command = ConvertImageCommand(self.strategy_sim, self.notifier, file)
+        command = ConvertImageCommand("simple", self.notifier, file)
         command.execute()
         self.assertEqual(command._out_file, f'Simple conversion for {file}...', 
                          'Файл не конвертируется по команде execute')
@@ -110,7 +110,7 @@ class ConreteCommandClassesTest(TestCase):
     def test_undo_command(self):
         '''Тест: Корректность работы undo-метода'''
         file = 'dog.webp'
-        command = ConvertImageCommand(self.strategy_sim, self.notifier, file)
+        command = ConvertImageCommand("simple", self.notifier, file)
         command.execute()
         command.undo()
         self.assertIsNone(command._out_file, 'Undo-команда не должна оставлять файла на экспорт')
