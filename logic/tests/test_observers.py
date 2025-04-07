@@ -1,8 +1,9 @@
 # logic/tests/test_Subjects
 from abc import ABC
 from unittest import TestCase
+import unittest
 
-from logic.observers import Observer, Subject
+from logic.observers import ConsoleLogger, ConversionNotifier, Observer, Subject
 
 
 class SubjectInterfaceTest(TestCase):
@@ -154,3 +155,42 @@ class ObserverInterfaceTest(TestCase):
              "Метод update должен быть помечен как @abstractmethod"
              )
   
+
+class ConversionNotifierTest(TestCase):
+    def setUp(self):
+        self.notifier = ConversionNotifier()
+        self.observer = ConsoleLogger()
+
+    def test_notify_method_realized(self):
+        '''Тест: Реализация метода notify для главного уведомителя'''
+        notify_method = getattr(ConversionNotifier, 'notify')
+        self.assertFalse(getattr(notify_method, '__isabstractmethod__', False), 
+                         'Метод notify не реализован для конкретного класса ConversionNotifier')
+        
+    def test_notifier_append_observer(self):
+        self.assertFalse(self.notifier._observers)
+        self.notifier.attach(self.observer)
+        self.assertEqual(len(self.notifier._observers), 1, 'Наблюдатели должны добавляться ' \
+        'к уведомителю')
+        
+    def test_notifier_remove_observer(self):
+        self.assertFalse(self.notifier._observers)
+        self.notifier.attach(self.observer)
+        self.assertEqual(len(self.notifier._observers), 1, 'Наблюдатели должны добавляться ' \
+        'к уведомителю')
+        self.notifier.detach(self.observer)
+        self.assertEqual(len(self.notifier._observers), 0, 'Наблюдатели должны удаляться ' \
+        'через detach')
+
+
+class ConversionObserverTest(TestCase):
+    def test_update_method_realized_for_console_logger(self):
+        '''Тест: Реализация метода update для главного уведомителя'''
+        update_method = getattr(ConsoleLogger, 'update')
+        self.assertFalse(getattr(update_method, '__isabstractmethod__', False), 
+                         'Метод update не реализован для конкретного класса ConsoleLogger')
+
+
+
+if __name__ == "__main__":
+    unittest.main()
