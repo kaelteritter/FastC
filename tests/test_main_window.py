@@ -3,6 +3,7 @@ import unittest
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtTest import QTest
 from PyQt6.QtCore import QSize
+from PyQt6.QtGui import QPalette, QColor
 
 from gui.main_window import MainWindow
 
@@ -34,5 +35,27 @@ class TestWindowTitle(unittest.TestCase):
         
         # Альтернативная проверка через size()
         self.assertEqual(window.size(), QSize(expected_width, expected_height))
+    
+    def test_auto_fill_background(self):
+        """Тест автоматического заполнения фона"""
+        window = MainWindow()
+
+        self.assertTrue(window.autoFillBackground())
+    
+    def test_background_color(self):
+        """Тест установки цвета фона"""
+        window = MainWindow()
+        
+        # Получаем палитру окна
+        palette = window.palette()
+        
+        # Проверяем цвет для роли фона
+        background_color = palette.color(QPalette.ColorRole.Window)
+        
+        # Ожидаемый цвет (темно-серый)
+        expected_color = QColor("#2b2b2b")
+        
+        # Проверяем что цвета совпадают
+        self.assertEqual(background_color, expected_color)
 if __name__ == "__main__":
     unittest.main()
