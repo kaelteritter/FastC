@@ -1,7 +1,8 @@
 # logic/tests/test_interfaces
 from abc import ABC
 from unittest import TestCase
-from logic.converters import ConversionStrategy
+import unittest
+from logic.converters import AdvancedConversionStrategy, ConversionStrategy, SimpleConversionStrategy
 
 
 class StrategyInterfaceTest(TestCase):
@@ -54,3 +55,49 @@ class StrategyInterfaceTest(TestCase):
             getattr(convert_method, '__isabstractmethod__', False),
              "Метод convert должен быть помечен как @abstractmethod"
              )
+        
+    
+class StrategyConreteClassesTest(TestCase):
+    def setUp(self):
+        self.simple = SimpleConversionStrategy.__name__
+        self.advanced = AdvancedConversionStrategy.__name__
+        self.simple_strategy = SimpleConversionStrategy()
+        self.advanced_strategy = AdvancedConversionStrategy()
+
+    def test_conrete_strategy_has_convert_method_realized(self):
+        '''
+        Тест: SimpleConversionStrategy, AdvancedConversionStrategy 
+        реализуют метод convert
+        '''
+        convert_method = getattr(SimpleConversionStrategy, 'convert')
+        self.assertFalse(
+            getattr(convert_method, '__isabstractmethod__', False),
+             f"Метод convert должен быть имплементирован в {self.simple}"
+             )
+        convert_method = getattr(AdvancedConversionStrategy, 'convert')
+        self.assertFalse(
+            getattr(convert_method, '__isabstractmethod__', False),
+             f"Метод convert должен быть имплементирован в {self.advanced}"
+             )
+        
+    def test_simple_strategy_convert_method_work(self):
+        file = 'example.webp'
+        conversion_simple = self.simple_strategy.convert(file)
+        conversion_advanced = self.advanced_strategy.convert(file)
+
+        self.assertEqual(conversion_simple, f'Simple conversion for {file}...')
+        self.assertEqual(conversion_advanced, f'Advanced conversion for {file}...')
+
+
+
+
+
+
+
+
+
+
+
+
+if __name__ == "__main__":
+    unittest.main()
