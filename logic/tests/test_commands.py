@@ -5,6 +5,7 @@ import unittest
 
 from logic.commands import Command, ConvertImageCommand
 from logic.converters import SimpleConversionStrategy
+from logic.observers import ConversionNotifier
 
 
 class CommandInterfaceTest(TestCase):
@@ -86,6 +87,7 @@ class ConreteCommandClassesTest(TestCase):
     def setUp(self):
         self.convert_image_cmd = ConvertImageCommand
         self.strategy_sim = SimpleConversionStrategy()
+        self.notifier = ConversionNotifier()
         
     def test_convert_image_command(self):
         '''Тест: Реализация метода execute в конкретной команде'''
@@ -100,7 +102,7 @@ class ConreteCommandClassesTest(TestCase):
     def test_execute_command(self):
         '''Тест: Корректность работы execute-метода'''
         file = 'dog.webp'
-        command = ConvertImageCommand(self.strategy_sim, file)
+        command = ConvertImageCommand(self.strategy_sim, self.notifier, file)
         command.execute()
         self.assertEqual(command._out_file, f'Simple conversion for {file}...', 
                          'Файл не конвертируется по команде execute')
@@ -108,7 +110,7 @@ class ConreteCommandClassesTest(TestCase):
     def test_undo_command(self):
         '''Тест: Корректность работы undo-метода'''
         file = 'dog.webp'
-        command = ConvertImageCommand(self.strategy_sim, file)
+        command = ConvertImageCommand(self.strategy_sim, self.notifier, file)
         command.execute()
         command.undo()
         self.assertIsNone(command._out_file, 'Undo-команда не должна оставлять файла на экспорт')
