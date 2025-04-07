@@ -4,6 +4,7 @@ from unittest import TestCase
 import unittest
 
 from logic.commands import Command, ConvertImageCommand
+from logic.converters import SimpleConversionStrategy
 
 
 class CommandInterfaceTest(TestCase):
@@ -83,7 +84,8 @@ class CommandInterfaceTest(TestCase):
 
 class ConreteCommandClassesTest(TestCase):
     def setUp(self):
-        self.convert_image_cmd = ConvertImageCommand()
+        self.convert_image_cmd = ConvertImageCommand
+        self.strategy_sim = SimpleConversionStrategy()
         
     def test_convert_image_command(self):
         '''Тест: Реализация метода execute в конкретной команде'''
@@ -95,8 +97,21 @@ class ConreteCommandClassesTest(TestCase):
         undo_method = getattr(self.convert_image_cmd, 'undo')
         self.assertFalse(getattr(undo_method, '__isabstractmethod__', False))
 
-    
-        
+    def test_execute_command(self):
+        '''Тест: Корректность работы execute-метода'''
+        file = 'dog.webp'
+        command = ConvertImageCommand(self.strategy_sim, file)
+        command.execute()
+        self.assertEqual(command._out_file, f'Simple conversion for {file}...', 
+                         'Файл не конвертируется по команде execute')
+
+    def test_undo_command(self):
+        '''Тест: Корректность работы undo-метода'''
+        file = 'dog.webp'
+        command = ConvertImageCommand(self.strategy_sim, file)
+        command.execute()
+        command.undo()
+        self.assertIsNone(command._out_file, 'Undo-команда не должна оставлять файла на экспорт')
 
 
 if __name__ == "__main__":
