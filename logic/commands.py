@@ -26,7 +26,7 @@ class ConvertImageCommand(Command):
             _in_file
                  ):
         self.strategy = FileConverterFactory().create_converter(converter_type)
-        self.notifier = notifier()
+        self.notifier = notifier
         self._in_file = _in_file
         self._out_file = None
 
