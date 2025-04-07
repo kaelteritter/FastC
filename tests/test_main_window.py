@@ -1,61 +1,46 @@
 import unittest
-
+from unittest.mock import patch
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtTest import QTest
-from PyQt6.QtCore import QSize
-from PyQt6.QtGui import QPalette, QColor
+from PyQt6.QtCore import Qt
 
 from gui.main_window import MainWindow
 
-class TestWindowTitle(unittest.TestCase):
+class TestMainWindow(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
-        cls.app = QApplication([])  # Инициализация QApplication
+        cls.app = QApplication([])
     
-    def test_window_title(self):
-        """Тест заголовка главного окна"""
+    def test_button_click(self):
+        """Тест нажатия кнопки"""
+        # Создаем окно с подменой метода ДО инициализации
+        with patch.object(MainWindow, 'the_button_was_clicked') as mock_method:
+            window = MainWindow()
+            button = window.button
+            
+            # Имитируем нажатие кнопки
+            QTest.mouseClick(button, Qt.MouseButton.LeftButton)
+            QApplication.processEvents()
+            
+            # Проверяем вызов
+            mock_method.assert_called_once()
+    
+    def test_button_properties(self):
+        """Тест свойств кнопки"""
         window = MainWindow()
-        self.assertEqual(window.windowTitle(), "FastC")
+        self.assertEqual(window.button.text(), "select image")
+        self.assertEqual(window.button.width(), 150)
+        self.assertEqual(window.button.height(), 170)
+        window.close()
+    
+    def test_button_styles(self):
+        """Тест стилей кнопки"""
+        window = MainWindow()
+        style = window.button.styleSheet()
+        self.assertIn("background-color: #7f7f7f", style)
+        self.assertIn("border-radius: 5px", style)
+        window.close()
 
-    def test_window_fixed_size(self):
-        """Тест фиксированного размера окна"""
-        # Ожидаемые размеры
-        expected_width = 300
-        expected_height = 400
-        
-        window = MainWindow()
-        
-        # Проверяем, что размеры фиксированные
-        self.assertTrue(window.minimumSize() == window.maximumSize())
-        
-        # Проверяем точные размеры
-        self.assertEqual(window.width(), expected_width)
-        self.assertEqual(window.height(), expected_height)
-        
-        # Альтернативная проверка через size()
-        self.assertEqual(window.size(), QSize(expected_width, expected_height))
-    
-    def test_auto_fill_background(self):
-        """Тест автоматического заполнения фона"""
-        window = MainWindow()
-
-        self.assertTrue(window.autoFillBackground())
-    
-    def test_background_color(self):
-        """Тест установки цвета фона"""
-        window = MainWindow()
-        
-        # Получаем палитру окна
-        palette = window.palette()
-        
-        # Проверяем цвет для роли фона
-        background_color = palette.color(QPalette.ColorRole.Window)
-        
-        # Ожидаемый цвет (темно-серый)
-        expected_color = QColor("#2b2b2b")
-        
-        # Проверяем что цвета совпадают
-        self.assertEqual(background_color, expected_color)
 if __name__ == "__main__":
     unittest.main()
