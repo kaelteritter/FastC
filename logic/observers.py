@@ -48,5 +48,10 @@ class ConsoleLogger(Observer):
         self.logger = logging.getLogger("ConsoleLogger")
         self.logger.setLevel('INFO')
 
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel('INFO')
+
+        self.logger.addHandler(console_handler)
+
     def update(self, message):
         self.logger.info(f'[Console Logger] {message}')
