@@ -7,3 +7,10 @@ class MainWindow(QMainWindow):
         super().__init__()
         
         self.setWindowTitle("FastC")
+        self.setFixedSize(300, 400)
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec())
