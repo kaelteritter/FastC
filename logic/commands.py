@@ -21,21 +21,22 @@ class Command(ABC):
 class ConvertImageCommand(Command):
     def __init__(
             self,
-            converter_type: str="simple",
+            converter_type: str=None,
             notifier: ConversionNotifier=None,
-            _in_file: str=None,
-            _in_format: str=None,
-            _out_format: str=None
+            file: str=None,
+            format_in: str=None,
+            format_out: str=None
                  ):
-        self.strategy = FileConverterFactory().create_converter(converter_type)
+        self.strategy = FileConverterFactory().create_converter(format_in)
         self.notifier = notifier
-        self._in_file = _in_file
-        self._in_format = _in_format
-        self._out_format = _out_format
+        self._in_file = file
+        self._in_format = format_in
+        self._out_format = format_out
 
     def execute(self):
         self._out_file = self.strategy.convert(self._in_file)
-        self.notifier.notify(f"Conversion completed for {self._out_file}")
+        if self.notifier:
+            self.notifier.notify(f"Conversion completed for {self._out_file}")
         return self._out_file
 
     def undo(self):

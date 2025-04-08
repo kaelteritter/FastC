@@ -1,8 +1,12 @@
 # logic/tests/test_interfaces
 from abc import ABC
+import os
+from tempfile import NamedTemporaryFile
 from unittest import TestCase
 import unittest
-from logic.converters import AdvancedConversionStrategy, ConversionStrategy, SimpleConversionStrategy
+
+from PIL import Image
+from logic.converters import ConversionStrategy, WebpToJpgStrategy
 
 
 class StrategyInterfaceTest(TestCase):
@@ -57,41 +61,30 @@ class StrategyInterfaceTest(TestCase):
              )
         
     
-class StrategyConreteClassesTest(TestCase):
-    def setUp(self):
-        self.simple = SimpleConversionStrategy.__name__
-        self.advanced = AdvancedConversionStrategy.__name__
-        self.simple_strategy = SimpleConversionStrategy()
-        self.advanced_strategy = AdvancedConversionStrategy()
 
-    def test_conrete_strategy_has_convert_method_realized(self):
-        '''
-        Тест: SimpleConversionStrategy, AdvancedConversionStrategy 
-        реализуют метод convert
-        '''
-        convert_method = getattr(SimpleConversionStrategy, 'convert')
-        self.assertFalse(
-            getattr(convert_method, '__isabstractmethod__', False),
-             f"Метод convert должен быть имплементирован в {self.simple}"
-             )
-        convert_method = getattr(AdvancedConversionStrategy, 'convert')
-        self.assertFalse(
-            getattr(convert_method, '__isabstractmethod__', False),
-             f"Метод convert должен быть имплементирован в {self.advanced}"
-             )
-        
-    def test_simple_strategy_convert_method_work(self):
-        file = 'example.webp'
-        conversion_simple = self.simple_strategy.convert(file)
-        conversion_advanced = self.advanced_strategy.convert(file)
+class WebpToJpgStrategyTest(TestCase):
+    def test_webp_to_jpg_strategy_converting_files_correctly(self):
+        with NamedTemporaryFile(suffix='.webp', delete=False) as temp_webp:
+            webp_file = temp_webp.name
+            img = Image.new('RGB', (100, 100), color='red')
+            img.save(webp_file, 'WEBP')
 
-        self.assertEqual(conversion_simple, f'Simple conversion for {file}...')
-        self.assertEqual(conversion_advanced, f'Advanced conversion for {file}...')
+        with NamedTemporaryFile(suffix='.jpg', delete=False) as temp_jpg:
+            jpg_file = temp_jpg.name
 
+        try:
+            strategy = WebpToJpgStrategy()
+            strategy.convert(webp_file, jpg_file)
 
+            self.assertTrue(os.path.exists(jpg_file), 'Файл не был сконвертирован')
 
-
-
+            with Image.open(jpg_file) as img:
+                self.assertEqual(img.format, 'JPEG')
+                self.assertEqual(img.size, (100, 100))
+                self.assertEqual(img.mode, 'RGB')
+        finally:
+            os.unlink(webp_file)
+            os.unlink(jpg_file)
 
 
 
