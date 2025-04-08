@@ -1,4 +1,4 @@
-from .converters import AdvancedConversionStrategy, SimpleConversionStrategy
+from .converters import WebpToJpgStrategy
 
 
 class FileConverterFactory:
@@ -13,8 +13,7 @@ class FileConverterFactory:
     def __init__(self):
         if not self.__class__._initialized:
             self.converters = {
-                "simple": SimpleConversionStrategy,
-                "advanced": AdvancedConversionStrategy,
+                'webp': WebpToJpgStrategy
             }
             self.__class__._initialized = True
 
