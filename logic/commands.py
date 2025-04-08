@@ -20,15 +20,18 @@ class Command(ABC):
 
 class ConvertImageCommand(Command):
     def __init__(
-            self, 
-            converter_type: str,
-            notifier: ConversionNotifier,
-            _in_file
+            self,
+            converter_type: str="simple",
+            notifier: ConversionNotifier=None,
+            _in_file: str=None,
+            _in_format: str=None,
+            _out_format: str=None
                  ):
         self.strategy = FileConverterFactory().create_converter(converter_type)
         self.notifier = notifier
         self._in_file = _in_file
-        self._out_file = None
+        self._in_format = _in_format
+        self._out_format = _out_format
 
     def execute(self):
         self._out_file = self.strategy.convert(self._in_file)
