@@ -1,16 +1,19 @@
 import sys
 
 from PyQt6.QtWidgets import (
-    QApplication, QMainWindow, QLineEdit, 
-     QPushButton, QVBoxLayout, QWidget
+    QApplication, QMainWindow, QPushButton, QLabel,
+    QVBoxLayout, QWidget, QInputDialog, QFileDialog
 )
 from PyQt6.QtGui import QPalette, QColor
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, pyqtSignal
 
 from logic.commands import ConvertImageCommand
 from logic.observers import ConversionNotifier
 
 class MainWindow(QMainWindow):
+
+    fileSelected = pyqtSignal()
+
     def __init__(self):
         super().__init__()
         
@@ -26,6 +29,11 @@ class MainWindow(QMainWindow):
         # Создаём кнопку
         self.button = QPushButton("select image")
         self.button.clicked.connect(self.the_button_was_clicked)
+
+        # Метка для отображения выбранного файла
+        self.lbl_selected_file = QLabel("Файл не выбран")
+        self.lbl_selected_file.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.lbl_selected_file.setWordWrap(True)
 
         self.button.setStyleSheet("""
             QPushButton {
@@ -47,20 +55,6 @@ class MainWindow(QMainWindow):
 
         self.button.setFixedSize(150, 170)
 
-        # Создаём текстовое поле
-        self.text_input = QLineEdit()
-        self.text_input.setPlaceholderText("Введите сообщение...")
-        self.text_input.setStyleSheet("""
-            QLineEdit {
-                background-color: #444;
-                color: white;
-                border: 1px solid #555;
-                border-radius: 5px;
-                padding: 8px;
-                font-size: 14px;
-            }
-        """)
-        self.text_input.returnPressed.connect(self.on_enter_pressed)
 
         # Чтобы кнопка была по центру, используем layout
         layout = QVBoxLayout()
@@ -72,10 +66,26 @@ class MainWindow(QMainWindow):
         container = QWidget()
         container.setLayout(layout)
         self.setCentralWidget(container)  # Устанавливаем как центральный виджет
-    
+
+        self.fileSelected.connect(self.changeButtonText)
+        
     def the_button_was_clicked(self):
-        command = ConvertImageCommand("simple", ConversionNotifier, "file.web")
-        command.execute()
+        # Открываем диалог выбора файла
+        file_dialog = QFileDialog()
+        file_path, _ = file_dialog.getOpenFileName(
+            self,
+            "Выберите файл",
+            "",  # Начальная директория (пусто = последняя использованная)
+            "Все файлы (*);;Текстовые файлы (*.txt);;Изображения (*.png *.jpg *.jpeg)"
+        )
+        print(file_path)
+        if file_path:
+            self.fileSelected.emit()
+    
+    def changeButtonText(self):
+        
+        self.button.setText("Convert image")
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
