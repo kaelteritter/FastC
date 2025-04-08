@@ -7,8 +7,8 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtGui import QPalette, QColor
 from PyQt6.QtCore import Qt, pyqtSignal
 
-from logic.commands import ConvertImageCommand
-from logic.observers import ConversionNotifier
+from logic.facade import Converter
+
 
 class MainWindow(QMainWindow):
 
@@ -17,6 +17,8 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         
+        self.file_path = None
+
         self.setWindowTitle("FastC")
         self.setFixedSize(300, 400)
 
@@ -70,21 +72,27 @@ class MainWindow(QMainWindow):
         self.fileSelected.connect(self.changeButtonText)
         
     def the_button_was_clicked(self):
-        # Открываем диалог выбора файла
-        file_dialog = QFileDialog()
-        file_path, _ = file_dialog.getOpenFileName(
-            self,
-            "Выберите файл",
-            "",  # Начальная директория (пусто = последняя использованная)
-            "Все файлы (*);;Текстовые файлы (*.txt);;Изображения (*.png *.jpg *.jpeg)"
-        )
-        print(file_path)
-        if file_path:
-            self.fileSelected.emit()
+        if not(self.file_path):
+            # Открываем диалог выбора файла
+            self.file_dialog = QFileDialog()
+            self.file_path, _ = self.file_dialog.getOpenFileName(
+                self,
+                "Выберите файл",
+                "",  # Начальная директория (пусто = последняя использованная)
+                "Все файлы (*);;Текстовые файлы (*.txt);;Изображения (*.png *.jpg *.jpeg)"
+            )
+        else:
+            converter = Converter()
+            output = converter.convert(self.file_path, 'webp', 'jpg')
+            self.file_path = None
+        self.fileSelected.emit()
     
     def changeButtonText(self):
+        if self.file_path:
+            self.button.setText("convert image")
+        else:
+            self.button.setText("select image")
         
-        self.button.setText("Convert image")
 
 
 if __name__ == "__main__":
